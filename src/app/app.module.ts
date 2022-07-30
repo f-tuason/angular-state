@@ -8,6 +8,7 @@ import { StoreModule } from '@ngrx/store';
 
 import { AppComponent } from './app.component';
 import { ListModule } from './store/list.module';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,6 +19,7 @@ import { ListModule } from './store/list.module';
     FormsModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot([]),
+    StoreDevtoolsModule.instrument({ maxAge: 15 }),
     ListModule,
   ],
   providers: [],

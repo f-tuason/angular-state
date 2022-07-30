@@ -2,6 +2,8 @@
   FName: <input type="text" [(ngModel)]="fname" name="fname" />
   <button>Search</button>
 </form>
+<button *ngIf="prev$ | async" type="button" (click)="onPrev()">Prev</button>
+<button *ngIf="next$ | async" type="button" (click)="onNext()">Next</button>
 <p *ngIf="loading$ | async">loading</p>
 <div *ngIf="!(loading$ | async)">
   <table border="1" *ngFor="let item of list$ | async">

@@ -1,12 +1,13 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { createFeature, createReducer, on } from '@ngrx/store';
 import * as ListActions from './actions';
-import { List } from './model';
+import { List, Pagination } from './model';
 
 export const listFeatureKey = 'list';
 
 export interface ListState extends EntityState<List> {
   loading: boolean;
+  pagination: Pagination;
 }
 
 export function sortByName(a: List, b: List): number {
@@ -19,6 +20,12 @@ export const listAdapter: EntityAdapter<List> = createEntityAdapter<List>({
 
 export const initialState: ListState = listAdapter.getInitialState({
   loading: false,
+  pagination: {
+    previous_page_offset: -1,
+    previous_page: null,
+    next_page_offset: -1,
+    next_page: null,
+  },
 });
 
 export const listFeature = createFeature({
@@ -29,20 +36,25 @@ export const listFeature = createFeature({
       ...state,
       loading: true,
     })),
-    on(ListActions.loadListSuccess, (state, { list }) =>
-      listAdapter.setAll(list, { ...state, loading: false })
-    ),
-    on(ListActions.addListSuccess, (state, { list }) =>
-      listAdapter.addOne(list, state)
-    )
+    on(ListActions.loadListSuccess, (state, action) => {
+      return listAdapter.setAll(action.list, {
+        ...state,
+        loading: false,
+        pagination: action.pagination,
+      });
+    })
+    // on(ListActions.addListSuccess, (state, action) =>
+    //   listAdapter.addOne(action.list, state)
+    // )
   ),
 });
 
-const { selectAll, selectEntities, selectIds, selectTotal } =
-  listAdapter.getSelectors();
+const { selectAll } = listAdapter.getSelectors();
+//, selectEntities, selectIds, selectTotal
+
 export const selectList = selectAll;
-export const selectListEntities = selectEntities;
-export const selectListIds = selectIds;
-export const selectListTotal = selectTotal;
+// export const selectListEntities = selectEntities;
+// export const selectListIds = selectIds;
+// export const selectListTotal = selectTotal;
 
 export const { name, reducer, selectListState } = listFeature;

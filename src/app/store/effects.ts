@@ -12,14 +12,23 @@ export class ListEffects {
   loadList$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ListActions.loadList),
-      mergeMap((params) => {
+      mergeMap((action) => {
         return this.listService
-          .getList(params.select, params.page, params.total)
+          .getList(action.select, action.page, action.total)
           .pipe(
             tap(console.log),
-            //delay(3000),
+            delay(1000),
             map((result) => {
-              return ListActions.loadListSuccess({ list: result.data });
+              const pagination = {
+                previous_page_offset: result.meta.previous_page_offset,
+                previous_page: result.meta.previous_page,
+                next_page_offset: result.meta.next_page_offset,
+                next_page: result.meta.next_page,
+              };
+              return ListActions.loadListSuccess({
+                list: result.data,
+                pagination,
+              });
             })
           );
       }),
